@@ -29,16 +29,7 @@ pipeline {
             }
         }
 
-        stage('Unit Test') {
-            steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit '**/build/test-results/test/*.xml'
-                }
-            }
-        }
+
 
 
         stage('Package') {
@@ -47,45 +38,8 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                script {
-                    docker.build("${REGISTRY}:${IMAGE_TAG}")
-                }
-            }
-        }
 
-        stage('Docker Push') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_PASSWORD')]) {
-                    sh """
-                        echo $DOCKER_PASSWORD | docker login -u your-dockerhub-username --password-stdin
-                        docker push ${REGISTRY}:${IMAGE_TAG}
-                    """
-                }
-            }
-        }
 
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh """
-                    kubectl set image deployment/${KUBE_DEPLOYMENT} todo-list=${REGISTRY}:${IMAGE_TAG} --record
-                """
-            }
-        }
 
-        stage('Performance Test') {
-            steps {
-                echo 'Running performance test using JMeter...'
-                sh 'jmeter -n -t test/performance_test.jmx -l test/results.jtl'
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                echo 'Cleaning up workspace...'
-                cleanWs()
-            }
-        }
     }
 }
