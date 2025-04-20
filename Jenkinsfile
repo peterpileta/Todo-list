@@ -1,5 +1,14 @@
 pipeline {
-    agent any
+     agent {
+         docker {
+             image 'maven:3.8.3-openjdk-11' //
+             label 'docker'  //
+         }
+     }
+
+    tools {
+      maven 'Maven-3.8.3' //
+    }
 
     environment {
         REGISTRY = 'your-dockerhub-username/todo-list'
