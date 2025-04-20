@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-username/Todo-list.git'
+                git credentialsId: 'github-token', url: 'https://github.com/peterpileta/Todo-list.git'
             }
         }
 
